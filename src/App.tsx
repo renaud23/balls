@@ -1,40 +1,75 @@
-import { useEffect, useRef } from "react";
-
-import { activate, createGame, render } from "./game";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { activate, createGame, Game, render } from "./game";
 
 function App() {
   const canvasEl = useRef<HTMLCanvasElement>(null);
   const init = useRef(false);
-  // const [context, setContext] = useState<CanvasRenderingContext2D>();
+  const [game, setGame] = useState<Game>();
+  const [speed, setSpeed] = useState(15);
+  const [nbBalls] = useState(2);
+  const anId = useRef<number>();
+  const [context, setContext] = useState<CanvasRenderingContext2D | null>();
 
-  useEffect(() => {
-    if (!init.current && canvasEl.current) {
-      init.current = true;
-      let time = new Date().getTime();
+  const start = useCallback(
+    (speed: number) => {
+      if (canvasEl.current && game) {
+        let time = new Date().getTime();
 
-      const ctx = canvasEl.current.getContext("2d");
-      const game = createGame(800, 500);
+        function loop() {
+          const current = new Date().getTime();
+          const ellapsed = current - time;
 
-      function loop() {
-        const current = new Date().getTime();
-        const ellapsed = current - time;
+          if (ellapsed > speed && context && game) {
+            time = current;
+            activate(game);
+            render(context, game);
+          }
 
-        if (ellapsed > 15 && ctx) {
-          time = current;
-          activate(game);
-          render(ctx, game);
+          anId.current = window.requestAnimationFrame(() => {
+            loop();
+          });
         }
 
-        window.requestAnimationFrame(() => {
-          loop();
-        });
+        loop();
       }
+    },
+    [game, context]
+  );
 
-      loop();
+  useEffect(() => {
+    if (!init.current) {
+      init.current = true;
+      setContext(canvasEl?.current?.getContext("2d"));
+      setGame(createGame(800, 500, nbBalls));
+      start(15);
+      console.log("oo");
     }
-  }, []);
+  }, [start, nbBalls]);
 
-  return <canvas ref={canvasEl} />;
+  useEffect(() => {
+    start(speed);
+  }, [speed, start]);
+
+  return (
+    <>
+      <canvas ref={canvasEl} />
+      <div>
+        <label htmlFor="speed">Speed</label>
+        <input
+          aria-labelledby=""
+          type="range"
+          min="5"
+          max="300"
+          value={speed}
+          id="speed"
+          onChange={(e) => {
+            if (anId.current) window.cancelAnimationFrame(anId.current);
+            setSpeed(parseInt(e.target.value));
+          }}
+        />
+      </div>
+    </>
+  );
 }
 
 export default App;

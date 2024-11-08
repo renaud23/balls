@@ -1,11 +1,13 @@
-import { Ball, createBall, createRandomBall, move } from "./ball";
+import { Ball, createRandomBall, move } from "./ball";
 import { render as renderBall } from "./ball";
+import { Brick, createBrick, render as renderBrick } from "./brique";
 import { distance, rotate } from "./utils";
 
 export type Game = {
   width: number;
   height: number;
   balls: Array<Ball>;
+  bricks: Array<Brick>;
 };
 
 /**
@@ -18,6 +20,10 @@ export function render(context: CanvasRenderingContext2D, game: Game) {
   context.fillStyle = "Cornsilk";
   context.fillRect(0, 0, game.width, game.height);
 
+  game.bricks.forEach((brick) => {
+    renderBrick(context, brick);
+  });
+
   game.balls.forEach((ball) => {
     renderBall(context, ball);
   });
@@ -29,19 +35,26 @@ export function render(context: CanvasRenderingContext2D, game: Game) {
  * @param height
  * @returns
  */
-export function createGame(width: number, height: number): Game {
-  //   const balls: Array<Ball> = [];
-
-  //   balls.push(createBall(100, 100, 20, Math.PI / 4, 5));
-  //   balls.push(createBall(300, 300, 20, (5 * Math.PI) / 4, 5));
-
-  const balls = new Array<Ball>(10)
+export function createGame(
+  width: number,
+  height: number,
+  nbBalls: number
+): Game {
+  const balls = new Array<Ball>(nbBalls)
     .fill(null)
     .map(() => createRandomBall(width, height));
 
-  console.log(balls);
+  const bricks = new Array<Brick>(20)
+    .fill({ x: 0, y: 0, width: 0, height: 0 })
+    .map((_, i) => {
+      const w = 60;
+      const h = 30;
+      const x = 80 + (i % 10) * w;
+      const y = 80 + Math.trunc(i / 10) * h;
+      return createBrick(x, y, w, h);
+    });
 
-  return { width, height, balls };
+  return { width, height, balls, bricks };
 }
 
 export function activate(game: Game) {
@@ -85,14 +98,14 @@ function ballCollision(game: Game, ball: Ball) {
         collision = true;
 
         const theta = Math.atan2(o.y - ball.y, o.x - ball.x);
-        const delta = o.radius + ball.radius - dist;
+        const delta = o.radius + ball.radius - dist + 1;
         ball.x -= Math.cos(theta) * delta;
         ball.y -= Math.sin(theta) * delta;
         /*         */
 
         const m1 = ball.radius;
         const m2 = o.radius;
-        // const theta = -Math.atan2(o.y - ball.y, o.x - ball.x);
+
         const v1 = rotate([ball.vx, ball.vy], -theta);
         const v2 = rotate([o.vx, o.vy], -theta);
         const u1 = rotate(
