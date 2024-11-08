@@ -1,7 +1,11 @@
-import { Ball, createRandomBall, move } from "./ball";
+import {
+  Ball,
+  collision as collisionBall,
+  createRandomBall,
+  move,
+} from "./ball";
 import { render as renderBall } from "./ball";
 import { Brick, createBrick, render as renderBrick } from "./brique";
-import { distance, rotate } from "./utils";
 
 export type Game = {
   width: number;
@@ -60,7 +64,7 @@ export function createGame(
 export function activate(game: Game) {
   game.balls.forEach((ball) => {
     move(ball);
-    ballCollision(game, ball);
+    collisionBall(game, ball);
     wallCollision(game, ball);
   });
 }
@@ -84,52 +88,6 @@ function wallCollision(game: Game, ball: Ball): boolean {
     ball.vy = -ball.vy;
     collision = true;
   }
-
-  return collision;
-}
-
-function ballCollision(game: Game, ball: Ball) {
-  let collision = false;
-
-  game.balls.forEach((o) => {
-    if (o.id !== ball.id) {
-      const dist = distance(ball.x, ball.y, o.x, o.y);
-      if (dist < o.radius + ball.radius) {
-        collision = true;
-
-        const theta = Math.atan2(o.y - ball.y, o.x - ball.x);
-        const delta = o.radius + ball.radius - dist + 1;
-        ball.x -= Math.cos(theta) * delta;
-        ball.y -= Math.sin(theta) * delta;
-        /*         */
-
-        const m1 = ball.radius;
-        const m2 = o.radius;
-
-        const v1 = rotate([ball.vx, ball.vy], -theta);
-        const v2 = rotate([o.vx, o.vy], -theta);
-        const u1 = rotate(
-          [
-            (v1[0] * (m1 - m2)) / (m1 + m2) + (v2[0] * 2 * m2) / (m1 + m2),
-            v1[1],
-          ],
-          theta
-        );
-        const u2 = rotate(
-          [
-            (v2[0] * (m2 - m1)) / (m1 + m2) + (v1[0] * 2 * m1) / (m1 + m2),
-            v2[1],
-          ],
-          theta
-        );
-
-        ball.vx = u1[0];
-        ball.vy = u1[1];
-        o.vx = u2[0];
-        o.vy = u2[1];
-      }
-    }
-  });
 
   return collision;
 }

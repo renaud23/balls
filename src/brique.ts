@@ -16,8 +16,8 @@ export function render(context: CanvasRenderingContext2D, brick: Brick) {
   context.strokeRect(
     brick.x + 1,
     brick.y + 1,
-    brick.width - 1,
-    brick.height - 1
+    brick.width - 2,
+    brick.height - 2
   );
 }
 
