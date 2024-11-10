@@ -1,12 +1,14 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { activate, createGame, Game, render } from "./game";
 
+ 
+
 function App() {
   const canvasEl = useRef<HTMLCanvasElement>(null);
   const init = useRef(false);
   const [game, setGame] = useState<Game>();
   const [speed, setSpeed] = useState(15);
-  const [nbBalls] = useState(2);
+  const [nbBalls] = useState(1);
   const anId = useRef<number>();
   const [context, setContext] = useState<CanvasRenderingContext2D | null>();
 
@@ -20,6 +22,7 @@ function App() {
           const ellapsed = current - time;
 
           if (ellapsed > speed && context && game) {
+            
             time = current;
             activate(game);
             render(context, game);
@@ -40,9 +43,8 @@ function App() {
     if (!init.current) {
       init.current = true;
       setContext(canvasEl?.current?.getContext("2d"));
-      setGame(createGame(800, 500, nbBalls));
-      start(15);
-      console.log("oo");
+      setGame(createGame(600, 600, nbBalls));
+      start(2);
     }
   }, [start, nbBalls]);
 
@@ -58,7 +60,7 @@ function App() {
         <input
           aria-labelledby=""
           type="range"
-          min="5"
+          min="2"
           max="300"
           value={speed}
           id="speed"

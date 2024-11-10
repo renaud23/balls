@@ -5,7 +5,18 @@ import {
   move,
 } from "./ball";
 import { render as renderBall } from "./ball";
-import { Brick, createBrick, render as renderBrick } from "./brique";
+import {
+  Brick,
+  render as renderBrick,
+  collision as collisionBricks,
+  getWest,
+  getEast,
+  getSouth,
+  getNorth,
+  isInBrick,
+} from "./brique";
+import { LEVEL1 } from "./levels/l1";
+import { drawPoint } from "./utils";
 
 export type Game = {
   width: number;
@@ -19,18 +30,42 @@ export type Game = {
  * @param context
  */
 export function render(context: CanvasRenderingContext2D, game: Game) {
-  context.canvas.width = game.width;
-  context.canvas.height = game.height;
+  const canvasWidth = 600;
+  const canvasHeight = 600;
+
+  context.canvas.width = canvasWidth;
+  context.canvas.height = canvasHeight;
   context.fillStyle = "Cornsilk";
-  context.fillRect(0, 0, game.width, game.height);
+  context.fillRect(0, 0, canvasWidth, canvasHeight);
 
   game.bricks.forEach((brick) => {
-    renderBrick(context, brick);
+    renderBrick(context, game, brick);
   });
 
   game.balls.forEach((ball) => {
-    renderBall(context, ball);
+    renderBall(context, game, ball);
   });
+
+  // const ball = game.balls[0];
+  // const brick = game.bricks[0];
+
+  // const alpha = Math.atan2(ball.vy, ball.vx);
+  // const points = [];
+  // points.push(getSouth(ball, brick, alpha));
+  // points.push(getNorth(ball, brick, alpha));
+  // points.push(getEast(ball, brick, alpha));
+  // points.push(getWest(ball, brick, alpha));
+
+  // points.forEach(([x, y]) => {
+  //   context.strokeStyle = "blue";
+  //   context.beginPath();
+  //   context.moveTo(ball.x, ball.y);
+  //   context.lineTo(ball.x + ball.vx * 100, ball.y + ball.vy * 100);
+  //   context.stroke();
+  //   if (isInBrick(brick, x, y)) {
+  //     drawPoint(context, "magenta", x, y);
+  //   }
+  // });
 }
 
 /**
@@ -45,30 +80,42 @@ export function createGame(
   nbBalls: number
 ): Game {
   const balls = new Array<Ball>(nbBalls)
-    .fill(null)
+    .fill({
+      id: 0,
+      x: 0,
+      y: 0,
+      radius: 0,
+      velocity: 0,
+      vx: 0,
+      vy: 0,
+      color: "",
+    })
     .map(() => createRandomBall(width, height));
 
-  const bricks = new Array<Brick>(20)
-    .fill({ x: 0, y: 0, width: 0, height: 0 })
-    .map((_, i) => {
-      const w = 60;
-      const h = 30;
-      const x = 80 + (i % 10) * w;
-      const y = 80 + Math.trunc(i / 10) * h;
-      return createBrick(x, y, w, h);
-    });
+  const bricks = transformLevel(width, height);
 
   return { width, height, balls, bricks };
 }
 
 export function activate(game: Game) {
   game.balls.forEach((ball) => {
-    move(ball);
-    collisionBall(game, ball);
-    wallCollision(game, ball);
+    let collided = false;
+
+    do {
+      move(ball);
+      collided = collisionBall(game, ball);
+      collisionBricks(game, ball);
+      wallCollision(game, ball);
+    } while (collided);
   });
 }
 
+/**
+ *
+ * @param game
+ * @param ball
+ * @returns
+ */
 function wallCollision(game: Game, ball: Ball): boolean {
   let collision = false;
   if (ball.x - ball.radius < 0) {
@@ -90,4 +137,28 @@ function wallCollision(game: Game, ball: Ball): boolean {
   }
 
   return collision;
+}
+
+function transformLevel(gw: number, gh: number): Array<Brick> {
+  const bricks: Array<Brick> = [];
+  const level = LEVEL1;
+  const ratio = gh / gw;
+  const width = gw / level[0].length;
+  const height = gh / (level[0].length * ratio);
+
+  level.forEach((ligne, j) => {
+    const codes = ligne.split("");
+    const length = ligne.length;
+
+    codes.forEach((code, i) => {
+      if (code === "1") {
+        const x = (i % length) * width;
+        const y = j * height;
+
+        bricks.push({ id: x * 100 + y, x, y, width, height });
+      }
+    });
+  });
+  // console.log(bricks);
+  return bricks;
 }

@@ -14,3 +14,27 @@ export function rotate(v: [number, number], theta: number) {
 export function getRandomInt(max: number) {
   return Math.floor(Math.random() * max);
 }
+
+export function drawPoint(
+  context: CanvasRenderingContext2D,
+  color: string,
+  x: number,
+  y: number
+) {
+  context.fillStyle = color;
+
+  context.fillRect(x, y, 2, 2);
+}
+
+export function drawCircle(
+  context: CanvasRenderingContext2D,
+  color: string,
+  x: number,
+  y: number,
+  radius: number
+) {
+  context.strokeStyle = color;
+  context.beginPath();
+  context.arc(x, y, radius, 0, Math.PI * 2);
+  context.stroke();
+}

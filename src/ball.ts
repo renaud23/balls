@@ -1,5 +1,5 @@
 import { Game } from "./game";
-import { distance, getRandomInt, rotate } from "./utils";
+import { distance, drawCircle, drawPoint, getRandomInt, rotate } from "./utils";
 
 let BALL_SEQUENCE = 1;
 
@@ -12,16 +12,44 @@ export type Ball = {
   radius: number;
   velocity: number;
   color: string;
+  collided?: boolean;
+  points?: Array<number>[];
+  nearest?: Array<number>;
 };
 
-export function render(context: CanvasRenderingContext2D, ball: Ball) {
+export function render(
+  context: CanvasRenderingContext2D,
+  game: Game,
+  ball: Ball
+) {
+  const rw = game.width / context.canvas.width;
+  const rh = game.height / context.canvas.height;
+
   context.strokeStyle = ball.color;
-  context.fillStyle = "lavender";
+  context.fillStyle = ball.collided ? "yellow" : "lavender";
   context.lineWidth = 1;
   context.beginPath();
-  context.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2, false);
+  context.arc(
+    ball.x / rw,
+    ball.y / rh,
+    ball.radius / rw,
+    0,
+    Math.PI * 2,
+    false
+  );
   context.fill();
   context.stroke();
+
+  //
+  if (ball.points) {
+    ball.points.forEach(([x, y]) => {
+      drawPoint(context, "rgb(0,255,0)", x, y);
+    });
+  }
+  //
+  if (ball.nearest) {
+    drawCircle(context, "white", ball.nearest[0], ball.nearest[1], 4);
+  }
 }
 
 export function createBall(
