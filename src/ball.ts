@@ -72,9 +72,9 @@ export function createBall(
 }
 
 export function createRandomBall(width: number, height: number): Ball {
-  const velocity = 5;
+  const velocity = 2;
   const angle = Math.PI * 2 * Math.random();
-  const radius = 5 + getRandomInt(3);
+  const radius = 10 + getRandomInt(0);
   const vx = Math.cos(angle) * velocity;
   const vy = Math.sin(angle) * velocity;
   const x = radius + getRandomInt(width - 2 * radius);

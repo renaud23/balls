@@ -10,7 +10,7 @@ function App() {
   const [game, setGame] = useState<Game>();
   const [speed, setSpeed] = useState(15);
 
-  const [nbBalls] = useState(20);
+  const [nbBalls] = useState(5);
   const anId = useRef<number>();
   const [context, setContext] = useState<CanvasRenderingContext2D | null>();
 

@@ -85,6 +85,11 @@ export function collision(game: Game, ball: Ball) {
     ) {
       collided = true;
       brick.points = getCollisionPoints(ball, brick);
+      // brick.points = intersectionPoints(ball, brick);
+      if (brick.points.length === 0) {
+        // brick.points = intersectionPoints(ball, brick);
+      }
+
       candidats.push(brick);
     }
   });
@@ -108,27 +113,70 @@ export function collision(game: Game, ball: Ball) {
     }
   }
 
-  // if (candidats.length) {
-  //   let brick: Brick;
-  //   let dist = Number.MAX_SAFE_INTEGER;
-  //   ball.collided = true;
-  //   candidats.forEach((b) => {
-  //     const d = distance(b.x + b.width / 2, b.y + b.height / 2, ball.x, ball.y);
-  //     if (d < dist) {
-  //       dist = d;
-  //       brick = b;
-  //     }
-  //   });
-  //   brick?.points = candidats;
-  //   if (brick) {
-  //     resolveCollision(ball, brick);
-
-  //     ball.collided = true;
-  //   }
-  // }
-
   return collided;
 }
+
+/* méthode 2 */
+export function intersectionPoints(ball: Ball, brick: Brick) {
+  const points: number[][] = [
+    ...getEast2(ball, brick),
+    ...getWest2(ball, brick),
+    ...getNorth2(ball, brick),
+    ...getSouth2(ball, brick),
+  ];
+
+  return points;
+}
+
+export function getNorth2(ball: Ball, brick: Brick) {
+  const points: number[][] = [];
+  const a = brick.y - ball.y;
+  const theta = Math.asin(a / ball.radius);
+  const dx = ball.radius * Math.cos(theta);
+
+  points.push([ball.x + dx, brick.y, DIRECTION.NORTH]);
+  points.push([ball.x - dx, brick.y, DIRECTION.NORTH]);
+
+  return points;
+}
+
+export function getSouth2(ball: Ball, brick: Brick) {
+  const points: number[][] = [];
+  const a = brick.y + brick.height - ball.y;
+  const theta = Math.asin(a / ball.radius);
+  const dx = ball.radius * Math.cos(theta);
+
+  points.push([ball.x + dx, brick.y + brick.height, DIRECTION.SOUTH]);
+  points.push([ball.x - dx, brick.y + brick.height, DIRECTION.SOUTH]);
+
+  return points;
+}
+
+export function getEast2(ball: Ball, brick: Brick) {
+  const points: number[][] = [];
+  const a = brick.x - ball.x;
+  const theta = Math.acos(a / ball.radius);
+  const dy = ball.radius * Math.sin(theta);
+
+  points.push([brick.x, ball.y + dy, DIRECTION.WEST]);
+  points.push([brick.x, ball.y - dy, DIRECTION.WEST]);
+
+  return points;
+}
+
+export function getWest2(ball: Ball, brick: Brick) {
+  const points: number[][] = [];
+  const a = brick.x + brick.width - ball.x;
+  const theta = Math.acos(a / ball.radius);
+  const dy = ball.radius * Math.sin(theta);
+
+  points.push([brick.x + brick.width, ball.y + dy, DIRECTION.EAST]);
+  points.push([brick.x + brick.width, ball.y - dy, DIRECTION.EAST]);
+
+  return points.filter(([x, y]) => isInBrick(brick, x, y));
+}
+
+/* méthode 1 */
 
 export function getWest(ball: Ball, brick: Brick, a: number) {
   const dx = brick.x - ball.x;
@@ -198,6 +246,7 @@ export function getCollisionPoints(ball: Ball, brick: Brick) {
   return points.filter(([x, y]) => isInBrick(brick, x, y));
 }
 
+/*  */
 export function resolveCollision(ball: Ball, brick: Brick) {
   brick.collided = true;
   if (brick.points) {
