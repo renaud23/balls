@@ -22,7 +22,7 @@ export function drawPoint(
   y: number
 ) {
   context.fillStyle = color;
-
+  context.beginPath();
   context.fillRect(x, y, 2, 2);
 }
 
@@ -36,5 +36,20 @@ export function drawCircle(
   context.strokeStyle = color;
   context.beginPath();
   context.arc(x, y, radius, 0, Math.PI * 2);
+  context.stroke();
+}
+
+export function drawLine(
+  context: CanvasRenderingContext2D,
+  color: string,
+  x1: number,
+  y1: number,
+  x2: number,
+  y2: number
+) {
+  context.strokeStyle = color;
+  context.beginPath();
+  context.moveTo(x1, y1);
+  context.lineTo(x2, y2);
   context.stroke();
 }

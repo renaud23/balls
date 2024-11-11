@@ -1,5 +1,13 @@
+import { DEBUG } from "./App";
 import { Game } from "./game";
-import { distance, drawCircle, drawPoint, getRandomInt, rotate } from "./utils";
+import {
+  distance,
+  drawCircle,
+  drawLine,
+  drawPoint,
+  getRandomInt,
+  rotate,
+} from "./utils";
 
 let BALL_SEQUENCE = 1;
 
@@ -13,8 +21,6 @@ export type Ball = {
   velocity: number;
   color: string;
   collided?: boolean;
-  points?: Array<number>[];
-  nearest?: Array<number>;
 };
 
 export function render(
@@ -40,15 +46,15 @@ export function render(
   context.fill();
   context.stroke();
 
-  //
-  if (ball.points) {
-    ball.points.forEach(([x, y]) => {
-      drawPoint(context, "rgb(0,255,0)", x, y);
-    });
-  }
-  //
-  if (ball.nearest) {
-    drawCircle(context, "white", ball.nearest[0], ball.nearest[1], 4);
+  if (DEBUG) {
+    drawLine(
+      context,
+      "blue",
+      ball.x - 1000 * ball.vx,
+      ball.y - 1000 * ball.vy,
+      ball.x + 1000 * ball.vx,
+      ball.y + 1000 * ball.vy
+    );
   }
 }
 
@@ -68,7 +74,7 @@ export function createBall(
 export function createRandomBall(width: number, height: number): Ball {
   const velocity = 5;
   const angle = Math.PI * 2 * Math.random();
-  const radius = 10 + getRandomInt(0);
+  const radius = 5 + getRandomInt(3);
   const vx = Math.cos(angle) * velocity;
   const vy = Math.sin(angle) * velocity;
   const x = radius + getRandomInt(width - 2 * radius);

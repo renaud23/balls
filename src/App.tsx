@@ -1,14 +1,16 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { activate, createGame, Game, render } from "./game";
 
- 
+let PAUSE = false;
+export const DEBUG = false;
 
 function App() {
   const canvasEl = useRef<HTMLCanvasElement>(null);
   const init = useRef(false);
   const [game, setGame] = useState<Game>();
   const [speed, setSpeed] = useState(15);
-  const [nbBalls] = useState(1);
+
+  const [nbBalls] = useState(20);
   const anId = useRef<number>();
   const [context, setContext] = useState<CanvasRenderingContext2D | null>();
 
@@ -21,8 +23,7 @@ function App() {
           const current = new Date().getTime();
           const ellapsed = current - time;
 
-          if (ellapsed > speed && context && game) {
-            
+          if (ellapsed > speed && context && game && !PAUSE) {
             time = current;
             activate(game);
             render(context, game);
@@ -69,6 +70,13 @@ function App() {
             setSpeed(parseInt(e.target.value));
           }}
         />
+        <button
+          onClick={() => {
+            PAUSE = !PAUSE;
+          }}
+        >
+          Pause
+        </button>
       </div>
     </>
   );

@@ -16,7 +16,7 @@ import {
   isInBrick,
 } from "./brique";
 import { LEVEL1 } from "./levels/l1";
-import { drawPoint } from "./utils";
+import { drawLine, drawPoint } from "./utils";
 
 export type Game = {
   width: number;
@@ -35,7 +35,7 @@ export function render(context: CanvasRenderingContext2D, game: Game) {
 
   context.canvas.width = canvasWidth;
   context.canvas.height = canvasHeight;
-  context.fillStyle = "Cornsilk";
+  context.fillStyle = "grey";
   context.fillRect(0, 0, canvasWidth, canvasHeight);
 
   game.bricks.forEach((brick) => {
@@ -46,25 +46,28 @@ export function render(context: CanvasRenderingContext2D, game: Game) {
     renderBall(context, game, ball);
   });
 
-  // const ball = game.balls[0];
+  //
   // const brick = game.bricks[0];
+  // const ball = game.balls[0];
 
-  // const alpha = Math.atan2(ball.vy, ball.vx);
+  // drawLine(
+  //   context,
+  //   "blue",
+  //   ball.x - 1000 * ball.vx,
+  //   ball.y - 1000 * ball.vy,
+  //   ball.x + 1000 * ball.vx,
+  //   ball.y + 1000 * ball.vy
+  // );
+
   // const points = [];
-  // points.push(getSouth(ball, brick, alpha));
-  // points.push(getNorth(ball, brick, alpha));
+  // const alpha = Math.atan2(ball.vy, ball.vx);
   // points.push(getEast(ball, brick, alpha));
   // points.push(getWest(ball, brick, alpha));
+  // points.push(getSouth(ball, brick, alpha));
+  // points.push(getNorth(ball, brick, alpha));
 
   // points.forEach(([x, y]) => {
-  //   context.strokeStyle = "blue";
-  //   context.beginPath();
-  //   context.moveTo(ball.x, ball.y);
-  //   context.lineTo(ball.x + ball.vx * 100, ball.y + ball.vy * 100);
-  //   context.stroke();
-  //   if (isInBrick(brick, x, y)) {
-  //     drawPoint(context, "magenta", x, y);
-  //   }
+  //   drawPoint(context, "magenta", x, y);
   // });
 }
 
