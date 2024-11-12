@@ -36,9 +36,9 @@ export type Mobile = {
   angle?: number;
 };
 
-export type Ball = Circle & Mobile;
+export type Ball = Circle & Mobile & Identifiable;
 
-export type Brick = Rectangle;
+export type Brick = Rectangle & Identifiable;
 
 export type Element = Ball | Rectangle;
 
