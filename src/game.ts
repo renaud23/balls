@@ -9,14 +9,8 @@ import {
   Brick,
   render as renderBrick,
   collision as collisionBricks,
-  getWest,
-  getEast,
-  getSouth,
-  getNorth,
-  isInBrick,
 } from "./brique";
 import { LEVEL1 } from "./levels/l1";
-import { drawLine, drawPoint } from "./utils";
 
 export type Game = {
   width: number;
@@ -45,30 +39,6 @@ export function render(context: CanvasRenderingContext2D, game: Game) {
   game.balls.forEach((ball) => {
     renderBall(context, game, ball);
   });
-
-  //
-  // const brick = game.bricks[0];
-  // const ball = game.balls[0];
-
-  // drawLine(
-  //   context,
-  //   "blue",
-  //   ball.x - 1000 * ball.vx,
-  //   ball.y - 1000 * ball.vy,
-  //   ball.x + 1000 * ball.vx,
-  //   ball.y + 1000 * ball.vy
-  // );
-
-  // const points = [];
-  // const alpha = Math.atan2(ball.vy, ball.vx);
-  // points.push(getEast(ball, brick, alpha));
-  // points.push(getWest(ball, brick, alpha));
-  // points.push(getSouth(ball, brick, alpha));
-  // points.push(getNorth(ball, brick, alpha));
-
-  // points.forEach(([x, y]) => {
-  //   drawPoint(context, "magenta", x, y);
-  // });
 }
 
 /**
@@ -103,13 +73,15 @@ export function createGame(
 export function activate(game: Game) {
   game.balls.forEach((ball) => {
     let collided = false;
-
+    let turn = 0;
     do {
       move(ball);
-      collided = collisionBall(game, ball);
+      collisionBall(game, ball);
       collisionBricks(game, ball);
       wallCollision(game, ball);
+      turn++;
     } while (collided);
+    console.log(turn);
   });
 }
 

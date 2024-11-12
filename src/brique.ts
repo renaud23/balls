@@ -14,6 +14,11 @@ const DIRECTION = {
   WEST: 8,
 };
 
+type Collision = {
+  brick: Brick;
+  points: number[][];
+};
+
 export type Brick = {
   id?: number;
   x: number;
@@ -68,11 +73,11 @@ export function createBrick(
 
 export function collision(game: Game, ball: Ball) {
   let collided = false;
-  const candidats: Array<Brick> = [];
+  const candidats: Array<Collision> = [];
   ball.collided = false;
   game.bricks.forEach((brick) => {
     brick.collided = false;
-    brick.points = [];
+
     const w =
       Math.max(brick.x + brick.width, ball.x + ball.radius) -
       Math.min(brick.x, ball.x - ball.radius);
@@ -84,26 +89,28 @@ export function collision(game: Game, ball: Ball) {
       h < brick.height + ball.radius * 2
     ) {
       collided = true;
-      brick.points = getCollisionPoints(ball, brick);
-      // brick.points = intersectionPoints(ball, brick);
-      if (brick.points.length === 0) {
-        // brick.points = intersectionPoints(ball, brick);
-      }
+      brick.collided = true;
 
-      candidats.push(brick);
+      // const points: number[][] = getCollisionPoints(ball, brick);
+      const points: number[][] = intersectionPoints(ball, brick);
+      if (DEBUG) {
+        brick.points = points;
+      }
+      candidats.push({ brick, points });
     }
   });
 
   if (candidats) {
-    let best: Brick;
+    let best: Collision;
     let dist = Number.MAX_SAFE_INTEGER;
 
-    candidats.forEach((b) => {
-      b.points?.forEach(([x, y]) => {
-        const d = distance(ball.x, ball.y, x, y);
+    candidats.forEach((coll) => {
+      const { points } = coll;
+      points.forEach(([x, y]) => {
+        const d = distance(ball.x - ball.vx, ball.y - ball.vy, x, y);
         if (d < dist) {
           dist = d;
-          best = b;
+          best = coll;
         }
       });
     });
@@ -117,6 +124,7 @@ export function collision(game: Game, ball: Ball) {
 }
 
 /* méthode 2 */
+
 export function intersectionPoints(ball: Ball, brick: Brick) {
   const points: number[][] = [
     ...getEast2(ball, brick),
@@ -125,7 +133,7 @@ export function intersectionPoints(ball: Ball, brick: Brick) {
     ...getSouth2(ball, brick),
   ];
 
-  return points;
+  return points.filter(([x, y]) => isInBrick(brick, x, y));
 }
 
 export function getNorth2(ball: Ball, brick: Brick) {
@@ -173,7 +181,7 @@ export function getWest2(ball: Ball, brick: Brick) {
   points.push([brick.x + brick.width, ball.y + dy, DIRECTION.EAST]);
   points.push([brick.x + brick.width, ball.y - dy, DIRECTION.EAST]);
 
-  return points.filter(([x, y]) => isInBrick(brick, x, y));
+  return points;
 }
 
 /* méthode 1 */
@@ -247,10 +255,15 @@ export function getCollisionPoints(ball: Ball, brick: Brick) {
 }
 
 /*  */
-export function resolveCollision(ball: Ball, brick: Brick) {
+export function resolveCollision(ball: Ball, collision: Collision) {
+  const { brick, points } = collision;
   brick.collided = true;
-  if (brick.points) {
-    const [gx, gy, direction] = nearest(brick.points, ball.x, ball.y);
+  if (points) {
+    const [gx, gy, direction] = nearest(
+      points,
+      ball.x - ball.vx,
+      ball.y - ball.vy
+    );
 
     if (direction === DIRECTION.WEST) {
       ball.x = brick.x - ball.radius;
