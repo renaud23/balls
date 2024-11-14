@@ -1,4 +1,3 @@
-import { Ball } from "../ball";
 import { distance } from "../utils";
 import {
   BallPx,
@@ -42,12 +41,6 @@ const intesectorBallVsBall: Intersector<BallPx, BallPx> = function (
   const dx = Math.cos(alpha) * hypo;
   const dy = Math.sin(alpha) * hypo;
 
-  //   const dist = distance(ball.x, ball.y, o.x, o.y);
-  // const theta = Math.atan2(o.y - ball.y, o.x - ball.x);
-  // const delta = o.radius + ball.radius - dist + 1;
-  // ball.x -= Math.cos(theta) * delta;
-  // ball.y -= Math.sin(theta) * delta;
-
   return [[a.position[0] - dx, a.position[1] - dy]];
 };
 
@@ -88,7 +81,7 @@ export function intersect(a: Element, b: Element) {
 export function getNorth(ball: BallPx, brick: BrickPx): OrientedVect2D[] {
   const points: OrientedVect2D[] = [];
   const a = brick.position[1] - ball.position[1];
-  const theta = Math.asin(a / ball.radius);
+  const theta = Math.acos(a / ball.radius);
   const dx = ball.radius * Math.cos(theta);
 
   points.push([ball.position[0] + dx, brick.position[1], DIRECTION.NORTH]);
@@ -100,7 +93,7 @@ export function getNorth(ball: BallPx, brick: BrickPx): OrientedVect2D[] {
 export function getSouth(ball: BallPx, brick: BrickPx) {
   const points: OrientedVect2D[] = [];
   const a = brick.position[1] + brick.height - ball.position[1];
-  const theta = Math.asin(a / ball.radius);
+  const theta = Math.acos(a / ball.radius);
   const dx = ball.radius * Math.cos(theta);
 
   points.push([
@@ -120,7 +113,7 @@ export function getSouth(ball: BallPx, brick: BrickPx) {
 export function getEast(ball: BallPx, brick: BrickPx) {
   const points: OrientedVect2D[] = [];
   const a = brick.position[0] - ball.position[0];
-  const theta = Math.acos(a / ball.radius);
+  const theta = Math.asin(a / ball.radius);
   const dy = ball.radius * Math.sin(theta);
 
   points.push([brick.position[0], ball.position[1] + dy, DIRECTION.WEST]);
@@ -132,7 +125,7 @@ export function getEast(ball: BallPx, brick: BrickPx) {
 export function getWest(ball: BallPx, brick: BrickPx) {
   const points: OrientedVect2D[] = [];
   const a = brick.position[0] + brick.width - ball.position[0];
-  const theta = Math.acos(a / ball.radius);
+  const theta = Math.asin(a / ball.radius);
   const dy = ball.radius * Math.sin(theta);
 
   points.push([

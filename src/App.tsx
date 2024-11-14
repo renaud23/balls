@@ -4,8 +4,8 @@ import { createRenderGame } from "./graphics/render";
 
 import { createGame } from "./game/game";
 
-const CANVAS_HEIGHT = 600;
-const CANVAS_WIDTH = 600;
+const CANVAS_HEIGHT = 800;
+const CANVAS_WIDTH = 800;
 
 const WORLD_WIDTH = CANVAS_HEIGHT * 1;
 const WORLD_HEIGHT = CANVAS_WIDTH * 1;

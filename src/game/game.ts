@@ -3,6 +3,7 @@ import { LEVEL1 } from "../levels/l1";
 import { createBallPx } from "../physic/ball";
 import { MotorPx } from "../physic/motor";
 import { BallPx, BrickPx, Vect2D } from "../physic/type";
+import { getRandomInt } from "../utils";
 
 export type Game = {
   balls: Ball[];
@@ -21,8 +22,8 @@ export type Brick = {
 };
 
 function createBall(width: number, height: number): Ball {
-  const radius = 6;
-  const alpha = (7 * Math.PI) / 8;
+  const radius = 8 + getRandomInt(10);
+  const alpha = (5 * Math.PI) / 4 + (Math.PI / 2) * Math.random();
   const velocity = 4;
   const direction: Vect2D = [
     Math.cos(alpha) * velocity,
@@ -48,7 +49,7 @@ export function createGame(
   });
 
   // ball
-  const balls = new Array<Ball>(10)
+  const balls = new Array<Ball>(20)
     .fill(null)
     .map(() => createBall(width, height));
   const ballsQA = new Map<string, Ball>();
