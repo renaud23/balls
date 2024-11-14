@@ -1,11 +1,12 @@
-import { BrickPx, PhysicType } from "../physic/type";
+import { Brick } from "../game/game";
+import { PhysicType } from "../physic/type";
 
-export function transformLevel(
+export function createLevel(
   gw: number,
   gh: number,
   level: string[]
-): Array<BrickPx> {
-  const bricks: Array<BrickPx> = [];
+): Array<Brick> {
+  const bricks: Array<Brick> = [];
   const ratio = gh / gw;
   const width = gw / level[0].length;
   const height = gh / (level[0].length * ratio);
@@ -20,11 +21,13 @@ export function transformLevel(
         const y = j * height;
 
         bricks.push({
-          type: PhysicType.Rectangle,
-          id: `${x * 100 + y}`,
-          position: [x, y],
-          width,
-          height,
+          px: {
+            type: PhysicType.Rectangle,
+            id: `${x * 100 + y}`,
+            position: [x, y],
+            width,
+            height,
+          },
         });
       }
     });

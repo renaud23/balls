@@ -1,3 +1,4 @@
+import { OrientedVect2D } from "./physic/intersector";
 import { Vect2D } from "./physic/type";
 
 export function distance(x1: number, y1: number, x2: number, y2: number) {
@@ -75,4 +76,8 @@ export function prodVectVect2D(a: Vect2D, b: Vect2D): Vect2D {
 
 export function prodScalVect2D(a: Vect2D, b: Vect2D): number {
   return a[0] * b[0] + a[1] * b[1];
+}
+
+export function castVect2D(vect: Vect2D | OrientedVect2D): Vect2D {
+  return [vect[0], vect[1]];
 }

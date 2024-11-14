@@ -1,9 +1,15 @@
 import { sumVect2D } from "../utils";
 import { checkCollision } from "./collider";
 import { filter } from "./filter";
-import { Collision, intersect } from "./intersector";
+import { Collision, intersect, OrientedVect2D } from "./intersector";
 import { reactor } from "./reactor";
-import { PhysicType, Walls, type Element, type Mobile } from "./type";
+import { PhysicType, Vect2D, Walls, type Element, type Mobile } from "./type";
+
+export type EventCollisionPx = {
+  a: Element;
+  b: Element;
+  point: Vect2D | OrientedVect2D;
+};
 
 export type MotorPx = {
   width: number;
@@ -11,7 +17,7 @@ export type MotorPx = {
   elements: Array<Element>;
   /* */
   appendElements: (e: Element | Element[]) => void;
-  activate: () => void;
+  activate: () => EventCollisionPx[];
 };
 
 export type MotorPhysicParams = {
@@ -63,6 +69,8 @@ function move(e?: Mobile & Element) {
 function createActivate(params: MotorPhysicParams, elements: Element[]) {
   return () => {
     const { width, height } = params;
+    const events: EventCollisionPx[] = [];
+
     elements.forEach((a) => {
       /* */
       const mobile = castAsMobile(a);
@@ -91,12 +99,14 @@ function createActivate(params: MotorPhysicParams, elements: Element[]) {
           const best = filter(collisions);
 
           if (best) {
-            const [b, points] = best;
-            reactor(a, b, points);
+            const [b, point] = best;
+            reactor(a, b, point);
+            events.push({ a, b, point });
           }
         }
       }
     });
+    return events;
   };
 }
 
