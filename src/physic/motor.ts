@@ -1,4 +1,3 @@
-import { EXTRA_POINTS } from "../graphics/render";
 import { sumVect2D } from "../utils";
 import { checkCollision } from "./collider";
 import { filter } from "./filter";
@@ -6,7 +5,7 @@ import { Collision, intersect } from "./intersector";
 import { reactor } from "./reactor";
 import { PhysicType, Walls, type Element, type Mobile } from "./type";
 
-export type MotorPhysic = {
+export type MotorPx = {
   width: number;
   height: number;
   elements: Array<Element>;
@@ -95,13 +94,6 @@ function createActivate(params: MotorPhysicParams, elements: Element[]) {
             const [b, points] = best;
             reactor(a, b, points);
           }
-          // reactor(collisions[0]);
-          //
-          // collisions.forEach((c) => {
-          //   c.points.forEach((p) => {
-          //     EXTRA_POINTS.push(p);
-          //   });
-          // });
         }
       }
     });
@@ -113,7 +105,7 @@ function createActivate(params: MotorPhysicParams, elements: Element[]) {
  * @param params
  * @returns
  */
-export function createMotorPx(params: MotorPhysicParams): MotorPhysic {
+export function createMotorPx(params: MotorPhysicParams): MotorPx {
   const { width, height } = params;
   const elements: Element[] = [];
 

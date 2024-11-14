@@ -39,11 +39,11 @@ export type Mobile = {
 
 export type Walls = { type: PhysicType.Walls; width: number; height: number };
 
-export type Ball = Circle & Mobile & Identifiable;
+export type BallPx = Circle & Mobile & Identifiable;
 
-export type Brick = Rectangle & Identifiable;
+export type BrickPx = Rectangle & Identifiable;
 
-export type Element = Ball | Brick;
+export type Element = BallPx | BrickPx;
 
 /* */
 

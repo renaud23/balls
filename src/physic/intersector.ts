@@ -1,7 +1,8 @@
+import { Ball } from "../ball";
 import { distance } from "../utils";
 import {
-  Ball,
-  Brick,
+  BallPx,
+  BrickPx,
   DIRECTION,
   Element,
   PhysicType,
@@ -25,9 +26,9 @@ export type Collision<A, B> = {
  * @param b
  * @returns
  */
-const intesectorBallVsBall: Intersector<Ball, Ball> = function (
-  a: Ball,
-  b: Ball
+const intesectorBallVsBall: Intersector<BallPx, BallPx> = function (
+  a: BallPx,
+  b: BallPx
 ) {
   const alpha = Math.atan2(
     b.position[1] - a.position[1],
@@ -36,7 +37,8 @@ const intesectorBallVsBall: Intersector<Ball, Ball> = function (
   const hypo =
     a.radius +
     b.radius -
-    distance(a.position[0], a.position[1], b.position[0], b.position[1]);
+    distance(a.position[0], a.position[1], b.position[0], b.position[1]) +
+    1;
   const dx = Math.cos(alpha) * hypo;
   const dy = Math.sin(alpha) * hypo;
 
@@ -55,9 +57,9 @@ const intesectorBallVsBall: Intersector<Ball, Ball> = function (
  * @param b
  * @returns
  */
-const intesectorBallVsBrick: Intersector<Ball, Brick> = function (
-  a: Ball,
-  b: Brick
+const intesectorBallVsBrick: Intersector<BallPx, BrickPx> = function (
+  a: BallPx,
+  b: BrickPx
 ) {
   const points: OrientedVect2D[] = [
     ...getNorth(a, b),
@@ -83,7 +85,7 @@ export function intersect(a: Element, b: Element) {
 /* */
 
 /* */
-export function getNorth(ball: Ball, brick: Brick): OrientedVect2D[] {
+export function getNorth(ball: BallPx, brick: BrickPx): OrientedVect2D[] {
   const points: OrientedVect2D[] = [];
   const a = brick.position[1] - ball.position[1];
   const theta = Math.asin(a / ball.radius);
@@ -95,7 +97,7 @@ export function getNorth(ball: Ball, brick: Brick): OrientedVect2D[] {
   return points;
 }
 
-export function getSouth(ball: Ball, brick: Brick) {
+export function getSouth(ball: BallPx, brick: BrickPx) {
   const points: OrientedVect2D[] = [];
   const a = brick.position[1] + brick.height - ball.position[1];
   const theta = Math.asin(a / ball.radius);
@@ -115,7 +117,7 @@ export function getSouth(ball: Ball, brick: Brick) {
   return points;
 }
 
-export function getEast(ball: Ball, brick: Brick) {
+export function getEast(ball: BallPx, brick: BrickPx) {
   const points: OrientedVect2D[] = [];
   const a = brick.position[0] - ball.position[0];
   const theta = Math.acos(a / ball.radius);
@@ -127,7 +129,7 @@ export function getEast(ball: Ball, brick: Brick) {
   return points;
 }
 
-export function getWest(ball: Ball, brick: Brick) {
+export function getWest(ball: BallPx, brick: BrickPx) {
   const points: OrientedVect2D[] = [];
   const a = brick.position[0] + brick.width - ball.position[0];
   const theta = Math.acos(a / ball.radius);
@@ -147,7 +149,7 @@ export function getWest(ball: Ball, brick: Brick) {
   return points;
 }
 
-export function isInBrick(vect: OrientedVect2D, b: Brick) {
+export function isInBrick(vect: OrientedVect2D, b: BrickPx) {
   const [x, y] = vect;
   if (
     x >= b.position[0] &&

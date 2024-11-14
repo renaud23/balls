@@ -11,7 +11,7 @@ export function distance2(a: Vect2D, b: Vect2D) {
   return Math.sqrt(prodScalVect2D(diff, diff));
 }
 
-export function rotate(v: [number, number], theta: number) {
+export function rotate(v: [number, number], theta: number): Vect2D {
   return [
     v[0] * Math.cos(theta) - v[1] * Math.sin(theta),
     v[0] * Math.sin(theta) + v[1] * Math.cos(theta),

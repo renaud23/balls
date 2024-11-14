@@ -1,14 +1,14 @@
 import {
-  Ball,
-  Brick,
+  BallPx,
+  BrickPx,
   DIRECTION,
   Element,
   PhysicType,
   Vect2D,
   Walls,
 } from "./type";
-import type { Collision, OrientedVect2D } from "./intersector";
-import { EXTRA_POINTS } from "../graphics/render";
+import type { OrientedVect2D } from "./intersector";
+import { rotate } from "../utils";
 
 export type Reactor<A, B> = (
   a: A,
@@ -16,8 +16,8 @@ export type Reactor<A, B> = (
   point?: Vect2D | OrientedVect2D
 ) => void;
 
-export const reactorBallVsWall: Reactor<Ball, Walls> = function (
-  a: Ball,
+export const reactorBallVsWall: Reactor<BallPx, Walls> = function (
+  a: BallPx,
   b: Walls
 ) {
   const [x, y] = a.position;
@@ -43,26 +43,45 @@ export const reactorBallVsWall: Reactor<Ball, Walls> = function (
  * @param a
  * @param b
  */
-export const reactorBallVsBall: Reactor<Ball, Ball> = (
-  a: Ball,
-  b: Ball,
+export const reactorBallVsBall: Reactor<BallPx, BallPx> = (
+  a: BallPx,
+  b: BallPx,
   point?: OrientedVect2D | Vect2D
 ) => {
-  a.direction[0] = 0;
-  a.direction[1] = 0;
+  // Séparation
   if (point) {
     a.position[0] = point[0];
     a.position[1] = point[1];
   }
+  // lois de Newton
+  const [ax, ay] = a.position;
+  const [bx, by] = b.position;
+  const theta = -Math.atan2(by - ay, bx - ax);
+  const m1 = a.radius;
+  const m2 = b.radius;
+
+  const v1 = rotate(a.direction, theta);
+  const v2 = rotate(b.direction, theta);
+
+  const u1 = rotate(
+    [(v1[0] * (m1 - m2)) / (m1 + m2) + (v2[0] * 2 * m2) / (m1 + m2), v1[1]],
+    -theta
+  );
+  const u2 = rotate(
+    [(v2[0] * (m2 - m1)) / (m1 + m2) + (v1[0] * 2 * m1) / (m1 + m2), v2[1]],
+    -theta
+  );
+
+  a.direction = u1;
+  b.direction = u2;
 };
 
-export const reactorBallVsBrick: Reactor<Ball, Brick> = function (
-  a: Ball,
-  b: Brick,
+export const reactorBallVsBrick: Reactor<BallPx, BrickPx> = function (
+  a: BallPx,
+  b: BrickPx,
   point?: OrientedVect2D | Vect2D
 ) {
   if (point) {
-    EXTRA_POINTS.push(point);
     const direction = point[2];
 
     if (direction === DIRECTION.WEST) {

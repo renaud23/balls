@@ -1,9 +1,9 @@
 import { distance2 } from "../utils";
-import { Ball, Brick, Collider, Element, PhysicType, Walls } from "./type";
+import { BallPx, BrickPx, Collider, Element, PhysicType, Walls } from "./type";
 
-const collisionBallVsBrick: Collider<Ball, Brick> = function (
-  a: Ball,
-  b: Brick
+const collisionBallVsBrick: Collider<BallPx, BrickPx> = function (
+  a: BallPx,
+  b: BrickPx
 ) {
   const maxx = Math.max(a.position[0] + a.radius, b.position[0] + b.width);
   const minx = Math.min(a.position[0] - a.radius, b.position[0]);
@@ -20,7 +20,10 @@ const collisionBallVsBrick: Collider<Ball, Brick> = function (
   return false;
 };
 
-const collisionBallVsBall: Collider<Ball, Ball> = function (A: Ball, B: Ball) {
+const collisionBallVsBall: Collider<BallPx, BallPx> = function (
+  A: BallPx,
+  B: BallPx
+) {
   const dist = distance2(A.position, B.position);
 
   if (dist < A.radius + B.radius) {
@@ -30,8 +33,8 @@ const collisionBallVsBall: Collider<Ball, Ball> = function (A: Ball, B: Ball) {
   return false;
 };
 
-export const colliderBallVsWall: Collider<Ball, Walls> = function (
-  A: Ball,
+export const colliderBallVsWall: Collider<BallPx, Walls> = function (
+  A: BallPx,
   B: Walls
 ) {
   const [x, y] = A.position;
