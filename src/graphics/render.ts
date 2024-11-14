@@ -1,80 +1,44 @@
-import { Brick, Game } from "../game/game";
-import { MotorPx } from "../physic/motor";
-import { Circle, Element, PhysicType, Rectangle } from "../physic/type";
+import { Ball, Brick, Game } from "../game/game";
+import { Vect2D } from "../physic/type";
+import { prodVectVect2D } from "../utils";
 
-export function createRender(width: number, height: number) {
-  return (context: CanvasRenderingContext2D, motor: MotorPx) => {
-    //
-    context.canvas.width = width;
-    context.canvas.height = height;
-    context.fillStyle = "lightgrey";
-    context.fillRect(0, 0, width, height);
-
-    //
-    motor.elements.forEach((e) => {
-      renderElement(context, e);
-    });
-  };
-}
-
-function renderElement(context: CanvasRenderingContext2D, e: Element) {
-  if (e.type === PhysicType.Circle) {
-    renderCircle(context, e);
-  } else if (e.type === PhysicType.Rectangle) {
-    renderRectangle(context, e);
-  }
-}
-
-function renderCircle(context: CanvasRenderingContext2D, circle: Circle) {
-  const [x, y] = circle.position;
-
-  context.strokeStyle = "blue";
-  context.fillStyle = "yellow";
-  context.beginPath();
-  context.arc(x, y, circle.radius, 0, Math.PI * 2);
-  context.fill();
-  context.stroke();
-}
-
-function renderRectangle(
+function renderBrick(
   context: CanvasRenderingContext2D,
-  rectangle: Rectangle
+  ratio: Vect2D,
+  brick: Brick
 ) {
-  const [x, y] = rectangle.position;
-
+  const [x, y] = prodVectVect2D(brick.px.position, ratio);
+  const [width, height] = prodVectVect2D(
+    [brick.px.width, brick.px.height],
+    ratio
+  );
   context.strokeStyle = "blue";
   context.fillStyle = "red";
   context.beginPath();
-  context.fillRect(x, y, rectangle.width, rectangle.height);
-  context.rect(x, y, rectangle.width, rectangle.height);
+  context.fillRect(x, y, width, height);
+  context.rect(x, y, width, height);
   context.stroke();
 }
 
-/* */
-
-function renderBrick(context: CanvasRenderingContext2D, brick: Brick) {
-  const [x, y] = brick.px.position;
-  context.strokeStyle = "blue";
-  context.fillStyle = "red";
-  context.beginPath();
-  context.fillRect(x, y, brick.px.width, brick.px.height);
-  context.rect(x, y, brick.px.width, brick.px.height);
-  context.stroke();
-}
-
-function renderBall(context: CanvasRenderingContext2D, ball: Ball) {
-  const [x, y] = ball.px.position;
+function renderBall(
+  context: CanvasRenderingContext2D,
+  ratio: Vect2D,
+  ball: Ball
+) {
+  const [x, y] = prodVectVect2D(ball.px.position, ratio);
 
   context.strokeStyle = "blue";
   context.fillStyle = "yellow";
   context.beginPath();
-  context.arc(x, y, ball.px.radius, 0, Math.PI * 2);
+  context.arc(x, y, ball.px.radius * ratio[0], 0, Math.PI * 2);
   context.fill();
   context.stroke();
 }
 
 export function createRenderGame(width: number, height: number) {
   return (context: CanvasRenderingContext2D, game: Game) => {
+    const ratio: Vect2D = [width / game.px.width, height / game.px.height];
+
     //
     context.canvas.width = width;
     context.canvas.height = height;
@@ -82,11 +46,11 @@ export function createRenderGame(width: number, height: number) {
     context.fillRect(0, 0, width, height);
     //
     game.bricks.forEach((b) => {
-      renderBrick(context, b);
+      renderBrick(context, ratio, b);
     });
     //
     game.balls.forEach((b) => {
-      renderBall(context, b);
+      renderBall(context, ratio, b);
     });
   };
 }

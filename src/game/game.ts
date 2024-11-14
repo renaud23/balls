@@ -7,6 +7,7 @@ import { BallPx, BrickPx, Vect2D } from "../physic/type";
 export type Game = {
   balls: Ball[];
   bricks: Brick[];
+  px: MotorPx;
   activate: () => void;
 };
 
@@ -20,7 +21,7 @@ export type Brick = {
 };
 
 function createBall(width: number, height: number): Ball {
-  const radius = 8;
+  const radius = 6;
   const alpha = (7 * Math.PI) / 8;
   const velocity = 4;
   const direction: Vect2D = [
@@ -59,6 +60,7 @@ export function createGame(
   return {
     balls,
     bricks,
+    px: motorPx,
     /* */
     activate: () => {
       const events = motorPx.activate();

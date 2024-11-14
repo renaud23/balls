@@ -1,17 +1,14 @@
 import { useEffect, useRef } from "react";
 import { createMotorPx } from "./physic/motor";
-import { createRender, createRenderGame } from "./graphics/render";
-import { createRandomBall } from "./physic/ball";
-import { transformLevel } from "./levels/transformLevel";
-import { LEVEL1 } from "./levels/l1";
-import { BallPx } from "./physic/type";
+import { createRenderGame } from "./graphics/render";
+
 import { createGame } from "./game/game";
 
 const CANVAS_HEIGHT = 600;
 const CANVAS_WIDTH = 600;
 
-const WORLD_WIDTH = 600;
-const WORLD_HEIGHT = 600;
+const WORLD_WIDTH = CANVAS_HEIGHT * 1;
+const WORLD_HEIGHT = CANVAS_WIDTH * 1;
 
 function App() {
   const canvasEl = useRef<HTMLCanvasElement>(null);
@@ -24,34 +21,22 @@ function App() {
       init.current = true;
       const context = canvasEl?.current?.getContext("2d");
       //
-      // const motor = createMotorPx({ width: WORLD_WIDTH, height: WORLD_HEIGHT });
+
       const game = createGame(
         WORLD_WIDTH,
         WORLD_HEIGHT,
         createMotorPx({ width: WORLD_WIDTH, height: WORLD_HEIGHT })
       );
-      const render = createRenderGame(WORLD_WIDTH, WORLD_HEIGHT);
-      // const render = createRender(CANVAS_WIDTH, CANVAS_HEIGHT);
-      // //
-      // const bricks = transformLevel(WORLD_WIDTH, WORLD_HEIGHT, LEVEL1);
-
-      // //
-      // const balls: BallPx[] = new Array(5)
-      //   .fill({})
-      //   .map(() => createRandomBall(WORLD_WIDTH, WORLD_HEIGHT));
-
-      // motor.appendElements(balls);
-      // motor.appendElements(bricks);
+      const render = createRenderGame(CANVAS_WIDTH, CANVAS_HEIGHT);
 
       let time = new Date().getTime();
       function loop() {
         const current = new Date().getTime();
         const ellapsed = current - time;
 
-        if (ellapsed > 5 && context) {
+        if (ellapsed > 20 && context) {
           time = current;
-          // motor.activate();
-          // render(context, motor);
+
           game.activate();
           render(context, game);
         }
