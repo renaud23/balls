@@ -1,7 +1,14 @@
+import { Vect2D } from "./physic/type";
+
 export function distance(x1: number, y1: number, x2: number, y2: number) {
   const dx = x2 - x1;
   const dy = y2 - y1;
   return Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
+}
+
+export function distance2(a: Vect2D, b: Vect2D) {
+  const diff = lessVect2D(a, b);
+  return Math.sqrt(prodScalVect2D(diff, diff));
 }
 
 export function rotate(v: [number, number], theta: number) {
@@ -52,4 +59,20 @@ export function drawLine(
   context.moveTo(x1, y1);
   context.lineTo(x2, y2);
   context.stroke();
+}
+
+export function lessVect2D(a: Vect2D, b: Vect2D): Vect2D {
+  return [a[0] - b[0], a[1] - b[1]];
+}
+
+export function sumVect2D(a: Vect2D, b: Vect2D): Vect2D {
+  return [a[0] + b[0], a[1] + b[1]];
+}
+
+export function prodVectVect2D(a: Vect2D, b: Vect2D): Vect2D {
+  return [a[0] * b[0], a[1] * b[1]];
+}
+
+export function prodScalVect2D(a: Vect2D, b: Vect2D): number {
+  return a[0] * b[0] + a[1] * b[1];
 }

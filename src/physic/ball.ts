@@ -10,7 +10,7 @@ export function createRandomBall(width: number, height: number): Ball {
   const vx = Math.cos(angle) * velocity;
   const vy = Math.sin(angle) * velocity;
   const x = radius + getRandomInt(width - 2 * radius);
-  const y = height / 2 + radius + getRandomInt(height - 2 * radius);
+  const y = radius + getRandomInt(height - 2 * radius);
 
   return {
     type: PhysicType.Circle,

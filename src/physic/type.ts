@@ -15,6 +15,7 @@ export type Identifiable = {
 export enum PhysicType {
   Circle = "CIRCLE",
   Rectangle = "RECTANGLE",
+  Walls = "WALLS",
 }
 
 export type Circle = {
@@ -36,15 +37,17 @@ export type Mobile = {
   angle?: number;
 };
 
+export type Walls = { type: PhysicType.Walls; width: number; height: number };
+
 export type Ball = Circle & Mobile & Identifiable;
 
 export type Brick = Rectangle & Identifiable;
 
-export type Element = Ball | Rectangle;
+export type Element = Ball | Brick;
 
 /* */
 
-export type Collider<A extends Element, B extends Element> = (
+export type Collider<A extends Element | Walls, B extends Element | Walls> = (
   a: A,
   b: B
 ) => boolean;
