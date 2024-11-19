@@ -51,8 +51,22 @@ export const reactorBallVsBall: Reactor<BallPx, BallPx> = (
 ) => {
   // Séparation
   if (point) {
-    a.position[0] = point[0];
-    a.position[1] = point[1];
+    // a.position[0] = point[0];
+    // a.position[1] = point[1];
+
+    const alpha = Math.atan2(
+      b.position[1] - a.position[1],
+      b.position[0] - a.position[0]
+    );
+    const hypo =
+      distance(a.position[0], a.position[1], b.position[0], b.position[1]) -
+      b.radius -
+      a.radius;
+    const dx = Math.cos(alpha) * hypo;
+    const dy = Math.sin(alpha) * hypo;
+
+    a.position[0] += dx;
+    a.position[1] += dy;
   }
   // lois de Newton
   const [ax, ay] = a.position;

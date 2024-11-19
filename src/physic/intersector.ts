@@ -40,8 +40,7 @@ const intesectorBallVsBall: Intersector<Circle, Circle> = function (
   );
   const hypo =
     distance(a.position[0], a.position[1], b.position[0], b.position[1]) -
-    b.radius -
-    a.radius;
+    b.radius;
   const dx = Math.cos(alpha) * hypo;
   const dy = Math.sin(alpha) * hypo;
 
