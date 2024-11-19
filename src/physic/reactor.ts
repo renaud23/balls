@@ -4,11 +4,12 @@ import {
   DIRECTION,
   Element,
   PhysicType,
+  RoundedBrickPx,
   Vect2D,
   Walls,
 } from "./type";
 import type { OrientedVect2D } from "./intersector";
-import { rotate } from "../utils";
+import { distance, distance2, rotate } from "../utils";
 
 export type Reactor<A, B> = (
   a: A,
@@ -85,10 +86,10 @@ export const reactorBallVsBrick: Reactor<BallPx, BrickPx> = function (
     const direction = point[2];
 
     if (direction === DIRECTION.WEST) {
-      a.position[0] = b.position[0] - a.radius;
+      a.position[0] = b.position[0] - a.radius - 1;
       a.direction[0] *= -1;
     } else if (direction === DIRECTION.EAST) {
-      a.position[0] = b.position[0] + b.width + a.radius;
+      a.position[0] = b.position[0] + b.width + a.radius + 1;
       a.direction[0] *= -1;
     } else if (direction === DIRECTION.SOUTH) {
       a.position[1] = b.position[1] + b.height + a.radius;
@@ -99,6 +100,9 @@ export const reactorBallVsBrick: Reactor<BallPx, BrickPx> = function (
     }
   }
 };
+
+export const reactorBallVsRoundedBrick: Reactor<BallPx, RoundedBrickPx> =
+  function (a: BallPx, b: RoundedBrickPx, point?: OrientedVect2D | Vect2D) {};
 
 /**
  *
@@ -118,6 +122,8 @@ export function reactor(
       return reactorBallVsBall(a, b, point);
     } else if (b.type === PhysicType.Rectangle) {
       return reactorBallVsBrick(a, b, point);
+    } else if (b.type === PhysicType.RoundedRectangle) {
+      return reactorBallVsRoundedBrick(a, b);
     }
   }
 

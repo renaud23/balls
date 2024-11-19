@@ -1,9 +1,20 @@
 import { distance2 } from "../utils";
-import { BallPx, BrickPx, Collider, Element, PhysicType, Walls } from "./type";
+import {
+  BallPx,
+  BrickPx,
+  Circle,
+  Collider,
+  Element,
+  PhysicType,
+  Rectangle,
+  RoundedBrickPx,
+  RoundedRectangle,
+  Walls,
+} from "./type";
 
-const collisionBallVsBrick: Collider<BallPx, BrickPx> = function (
-  a: BallPx,
-  b: BrickPx
+const collisionBallVsBrick: Collider<Circle, Rectangle> = function (
+  a: Circle,
+  b: Rectangle
 ) {
   const maxx = Math.max(a.position[0] + a.radius, b.position[0] + b.width);
   const minx = Math.min(a.position[0] - a.radius, b.position[0]);
@@ -20,9 +31,9 @@ const collisionBallVsBrick: Collider<BallPx, BrickPx> = function (
   return false;
 };
 
-const collisionBallVsBall: Collider<BallPx, BallPx> = function (
-  A: BallPx,
-  B: BallPx
+const collisionBallVsBall: Collider<Circle, Circle> = function (
+  A: Circle,
+  B: Circle
 ) {
   const dist = distance2(A.position, B.position);
 
@@ -33,8 +44,8 @@ const collisionBallVsBall: Collider<BallPx, BallPx> = function (
   return false;
 };
 
-export const colliderBallVsWall: Collider<BallPx, Walls> = function (
-  A: BallPx,
+export const colliderBallVsWall: Collider<Circle, Walls> = function (
+  A: Circle,
   B: Walls
 ) {
   const [x, y] = A.position;
@@ -49,6 +60,23 @@ export const colliderBallVsWall: Collider<BallPx, Walls> = function (
   return false;
 };
 
+/**
+ *
+ * @param A
+ * @param B
+ * @returns
+ */
+export const colliderBallVsRoundedBrick: Collider<Circle, RoundedRectangle> =
+  function (A: Circle, B: RoundedRectangle) {
+    return collisionBallVsBrick(A, B.all);
+  };
+
+/**
+ *
+ * @param A
+ * @param B
+ * @returns
+ */
 export function checkCollision(A: Element, B: Element | Walls): boolean {
   if (A.type === PhysicType.Circle) {
     if (B.type === PhysicType.Walls) {
@@ -57,6 +85,16 @@ export function checkCollision(A: Element, B: Element | Walls): boolean {
       return collisionBallVsBall(A, B);
     } else if (B.type === PhysicType.Rectangle) {
       return collisionBallVsBrick(A, B);
+    } else if (B.type === PhysicType.RoundedRectangle) {
+      return colliderBallVsRoundedBrick(A, B);
+    }
+  } else if (A.type === PhysicType.RoundedRectangle) {
+    if (B.type === PhysicType.Circle) {
+      // TODO
+      return false;
+    } else if (B.type === PhysicType.Rectangle) {
+      // TODO
+      return false;
     }
   }
 

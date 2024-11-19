@@ -1,3 +1,4 @@
+import { POINTS_DRAW_DEBBUG } from "../graphics/render";
 import { sumVect2D } from "../utils";
 import { checkCollision } from "./collider";
 import { filter } from "./filter";
@@ -71,6 +72,8 @@ function createActivate(params: MotorPhysicParams, elements: Element[]) {
     const { width, height } = params;
     const events: EventCollisionPx[] = [];
 
+    // POINTS_DRAW_DEBBUG.splice(0, POINTS_DRAW_DEBBUG.length);
+
     elements.forEach((a) => {
       /* */
       const mobile = castAsMobile(a);
@@ -100,6 +103,7 @@ function createActivate(params: MotorPhysicParams, elements: Element[]) {
 
           if (best) {
             const [b, point] = best;
+            POINTS_DRAW_DEBBUG.push([point[0], point[1]]);
             reactor(a, b, point);
             events.push({ a, b, point });
           }

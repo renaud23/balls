@@ -1,10 +1,15 @@
+import { POINTS_DRAW_DEBBUG } from "../graphics/render";
 import { distance } from "../utils";
 import {
   BallPx,
   BrickPx,
+  Circle,
   DIRECTION,
   Element,
   PhysicType,
+  Rectangle,
+  RoundedBrickPx,
+  RoundedRectangle,
   Vect2D,
   Walls,
 } from "./type";
@@ -25,23 +30,22 @@ export type Collision<A, B> = {
  * @param b
  * @returns
  */
-const intesectorBallVsBall: Intersector<BallPx, BallPx> = function (
-  a: BallPx,
-  b: BallPx
+const intesectorBallVsBall: Intersector<Circle, Circle> = function (
+  a: Circle,
+  b: Circle
 ) {
   const alpha = Math.atan2(
     b.position[1] - a.position[1],
     b.position[0] - a.position[0]
   );
   const hypo =
-    a.radius +
+    distance(a.position[0], a.position[1], b.position[0], b.position[1]) -
     b.radius -
-    distance(a.position[0], a.position[1], b.position[0], b.position[1]) +
-    1;
+    a.radius;
   const dx = Math.cos(alpha) * hypo;
   const dy = Math.sin(alpha) * hypo;
 
-  return [[a.position[0] - dx, a.position[1] - dy]];
+  return [[a.position[0] + dx, a.position[1] + dy]];
 };
 
 /**
@@ -50,9 +54,9 @@ const intesectorBallVsBall: Intersector<BallPx, BallPx> = function (
  * @param b
  * @returns
  */
-const intesectorBallVsBrick: Intersector<BallPx, BrickPx> = function (
-  a: BallPx,
-  b: BrickPx
+const interctorBallVsBrick: Intersector<Circle, Rectangle> = function (
+  a: Circle,
+  b: Rectangle
 ) {
   const points: OrientedVect2D[] = [
     ...getNorth(a, b),
@@ -60,28 +64,58 @@ const intesectorBallVsBrick: Intersector<BallPx, BrickPx> = function (
     ...getEast(a, b),
     ...getWest(a, b),
   ];
+
+  // points.forEach((p) => {
+  //   if (isInBrick(p, b)) POINTS_DRAW_DEBBUG.push(p);
+  // });
+
   return points.filter((v) => isInBrick(v, b));
 };
 
+export const intersectorBallVsRoundedBrick: Intersector<
+  Circle,
+  RoundedBrickPx
+> = function (a: Circle, b: RoundedRectangle) {
+  const pleft = intesectorBallVsBall(a, b.left);
+  const pright = intesectorBallVsBall(a, b.right);
+  const pbody = interctorBallVsBrick(a, b.body);
+
+  const points = [...pleft, ...pright, ...pbody];
+
+  // points.forEach((p) => {
+  //   POINTS_DRAW_DEBBUG.push(p);
+  // });
+
+  return points;
+};
+
+/**
+ *
+ * @param a
+ * @param b
+ * @returns
+ */
 export function intersect(a: Element, b: Element) {
   if (a.type === PhysicType.Circle) {
     if (b.type === PhysicType.Circle) {
       return intesectorBallVsBall(a, b);
     } else if (b.type === PhysicType.Rectangle) {
-      return intesectorBallVsBrick(a, b);
+      return interctorBallVsBrick(a, b);
+    } else if (b.type === PhysicType.RoundedRectangle) {
+      return intersectorBallVsRoundedBrick(a, b);
     }
   }
 
-  throw new Error("Unsupported opération");
+  throw new Error("Unsupported opération, Intesect");
 }
 
 /* */
 
 /* */
-export function getNorth(ball: BallPx, brick: BrickPx): OrientedVect2D[] {
+export function getNorth(ball: Circle, brick: Rectangle): OrientedVect2D[] {
   const points: OrientedVect2D[] = [];
   const a = brick.position[1] - ball.position[1];
-  const theta = Math.acos(a / ball.radius);
+  const theta = Math.asin(a / ball.radius);
   const dx = ball.radius * Math.cos(theta);
 
   points.push([ball.position[0] + dx, brick.position[1], DIRECTION.NORTH]);
@@ -90,10 +124,10 @@ export function getNorth(ball: BallPx, brick: BrickPx): OrientedVect2D[] {
   return points;
 }
 
-export function getSouth(ball: BallPx, brick: BrickPx) {
+export function getSouth(ball: Circle, brick: Rectangle) {
   const points: OrientedVect2D[] = [];
   const a = brick.position[1] + brick.height - ball.position[1];
-  const theta = Math.acos(a / ball.radius);
+  const theta = Math.asin(a / ball.radius);
   const dx = ball.radius * Math.cos(theta);
 
   points.push([
@@ -110,22 +144,10 @@ export function getSouth(ball: BallPx, brick: BrickPx) {
   return points;
 }
 
-export function getEast(ball: BallPx, brick: BrickPx) {
-  const points: OrientedVect2D[] = [];
-  const a = brick.position[0] - ball.position[0];
-  const theta = Math.asin(a / ball.radius);
-  const dy = ball.radius * Math.sin(theta);
-
-  points.push([brick.position[0], ball.position[1] + dy, DIRECTION.WEST]);
-  points.push([brick.position[0], ball.position[1] - dy, DIRECTION.WEST]);
-
-  return points;
-}
-
-export function getWest(ball: BallPx, brick: BrickPx) {
+export function getEast(ball: Circle, brick: Rectangle) {
   const points: OrientedVect2D[] = [];
   const a = brick.position[0] + brick.width - ball.position[0];
-  const theta = Math.asin(a / ball.radius);
+  const theta = Math.acos(a / ball.radius);
   const dy = ball.radius * Math.sin(theta);
 
   points.push([
@@ -142,7 +164,19 @@ export function getWest(ball: BallPx, brick: BrickPx) {
   return points;
 }
 
-export function isInBrick(vect: OrientedVect2D, b: BrickPx) {
+export function getWest(ball: Circle, brick: Rectangle) {
+  const points: OrientedVect2D[] = [];
+  const a = brick.position[0] - ball.position[0];
+  const theta = Math.acos(a / ball.radius);
+  const dy = ball.radius * Math.sin(theta);
+
+  points.push([brick.position[0], ball.position[1] + dy, DIRECTION.WEST]);
+  points.push([brick.position[0], ball.position[1] - dy, DIRECTION.WEST]);
+
+  return points;
+}
+
+export function isInBrick(vect: OrientedVect2D, b: Rectangle) {
   const [x, y] = vect;
   if (
     x >= b.position[0] &&

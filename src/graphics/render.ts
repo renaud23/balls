@@ -1,6 +1,9 @@
-import { Ball, Brick, Game } from "../game/game";
+import { Ball, Brick, Game, Raquette } from "../game/game";
+import { OrientedVect2D } from "../physic/intersector";
 import { Vect2D } from "../physic/type";
-import { prodVectVect2D } from "../utils";
+import { drawPoint, prodVectVect2D } from "../utils";
+
+export const POINTS_DRAW_DEBBUG: Array<Vect2D | OrientedVect2D> = [];
 
 function renderBrick(
   context: CanvasRenderingContext2D,
@@ -35,6 +38,43 @@ function renderBall(
   context.stroke();
 }
 
+function renderRaquette(
+  context: CanvasRenderingContext2D,
+  ratio: Vect2D,
+  raquette: Raquette
+) {
+  context.strokeStyle = "blue";
+
+  context.beginPath();
+  context.arc(
+    raquette.px.left.position[0] * ratio[0],
+    raquette.px.left.position[1] * ratio[1],
+    raquette.px.left.radius * ratio[0],
+    0,
+    Math.PI * 2
+  );
+
+  context.stroke();
+
+  context.beginPath();
+  context.arc(
+    raquette.px.right.position[0] * ratio[0],
+    raquette.px.right.position[1] * ratio[1],
+    raquette.px.right.radius * ratio[0],
+    0,
+    Math.PI * 2
+  );
+  context.stroke();
+  context.beginPath();
+  context.rect(
+    raquette.px.body.position[0] * ratio[0],
+    raquette.px.body.position[1] * ratio[1],
+    raquette.px.body.width * ratio[0],
+    raquette.px.body.height * ratio[1]
+  );
+  context.stroke();
+}
+
 export function createRenderGame(width: number, height: number) {
   return (context: CanvasRenderingContext2D, game: Game) => {
     const ratio: Vect2D = [width / game.px.width, height / game.px.height];
@@ -51,6 +91,12 @@ export function createRenderGame(width: number, height: number) {
     //
     game.balls.forEach((b) => {
       renderBall(context, ratio, b);
+    });
+    renderRaquette(context, ratio, game.raquette);
+
+    // Debug
+    POINTS_DRAW_DEBBUG.forEach(([x, y]) => {
+      drawPoint(context, "white", x, y);
     });
   };
 }

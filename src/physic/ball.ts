@@ -14,7 +14,7 @@ export function createRandomBall(width: number, height: number): BallPx {
 
   return {
     type: PhysicType.Circle,
-    id: `${BALL_SEQUENCE++}`,
+    id: `balle-${BALL_SEQUENCE++}`,
     position: [x, y],
     radius,
     direction: [vx, vy],

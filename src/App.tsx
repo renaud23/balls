@@ -4,8 +4,8 @@ import { createRenderGame } from "./graphics/render";
 
 import { createGame } from "./game/game";
 
-const CANVAS_HEIGHT = 800;
-const CANVAS_WIDTH = 800;
+const CANVAS_HEIGHT = 600;
+const CANVAS_WIDTH = 600;
 
 const WORLD_WIDTH = CANVAS_HEIGHT * 1;
 const WORLD_HEIGHT = CANVAS_WIDTH * 1;
@@ -34,7 +34,7 @@ function App() {
         const current = new Date().getTime();
         const ellapsed = current - time;
 
-        if (ellapsed > 20 && context) {
+        if (ellapsed > 10 && context) {
           time = current;
 
           game.activate();

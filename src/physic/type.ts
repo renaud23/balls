@@ -16,6 +16,7 @@ export enum PhysicType {
   Circle = "CIRCLE",
   Rectangle = "RECTANGLE",
   Walls = "WALLS",
+  RoundedRectangle = "ROUNDED_RECTANGLE",
 }
 
 export type Circle = {
@@ -31,6 +32,14 @@ export type Rectangle = {
   height: number;
 };
 
+export type RoundedRectangle = {
+  type: PhysicType.RoundedRectangle;
+  all: Rectangle;
+  body: Rectangle;
+  left: Circle;
+  right: Circle;
+};
+
 export type Mobile = {
   direction: Vect2D;
   velocity?: number;
@@ -43,11 +52,13 @@ export type BallPx = Circle & Mobile & Identifiable;
 
 export type BrickPx = Rectangle & Identifiable;
 
-export type Element = BallPx | BrickPx;
+export type RoundedBrickPx = RoundedRectangle & Identifiable;
+
+export type Element = BallPx | BrickPx | RoundedBrickPx;
 
 /* */
 
-export type Collider<A extends Element | Walls, B extends Element | Walls> = (
-  a: A,
-  b: B
-) => boolean;
+export type Collider<
+  A extends Circle | Rectangle | RoundedRectangle | Walls,
+  B extends Circle | Rectangle | RoundedRectangle | Walls
+> = (a: A, b: B) => boolean;
